@@ -20,7 +20,7 @@ const {reg_login_schema} = require('../schema/user')
 router.post('/reguser',expressJoi(reg_login_schema),userHandler.regUser)
 
 //登录
-router.post('login',userHandler.login)
+router.post('/login',expressJoi(reg_login_schema),userHandler.login)
 
 
 

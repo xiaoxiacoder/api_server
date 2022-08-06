@@ -25,18 +25,29 @@ app.use((req,res,next) =>{
     next()
 })
 
+//解析token的中间件
+const expressJwt = require('express-jwt')
+//导入config.js
+const config = require('./config')
+//使用.unless指定哪些接口不需要token身份验证
+app.use(expressJwt.expressjwt({secret:config.jwtSecretkey,algorithms:['HS256']}).unless({
+    path:[/^\/api\//]
+}))
+
 
 //导入并注册用户路由模块
 const userRouter = require('./router/user')
 app.use('/api',userRouter)
 
-
+//导入joi
 const joi = require('joi')
 
 //全局错误中间件
 app.use((err,req,res,next) => {
     //数据验证失败
     if(err instanceof joi.ValidationError) return res.cc(err)
+    //捕获身份验证失败的错误
+    if(err.name ==='UnauthorizedError') return res.cc('身份认证失败')
     //未知错误
     res.cc(err)
 })
